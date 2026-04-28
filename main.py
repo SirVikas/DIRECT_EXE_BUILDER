@@ -24,6 +24,13 @@ if sys.platform == "win32":
 else:
     USER32 = None
 
+# Some Python/ctypes builds do not expose wintypes.ULONG_PTR.
+ULONG_PTR = (
+    wintypes.ULONG_PTR
+    if hasattr(wintypes, "ULONG_PTR")
+    else (ctypes.c_ulonglong if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_ulong)
+)
+
 
 class KEYBDINPUT(ctypes.Structure):
     _fields_ = [
@@ -31,7 +38,7 @@ class KEYBDINPUT(ctypes.Structure):
         ("wScan", wintypes.WORD),
         ("dwFlags", wintypes.DWORD),
         ("time", wintypes.DWORD),
-        ("dwExtraInfo", wintypes.ULONG_PTR),
+        ("dwExtraInfo", ULONG_PTR),
     ]
 
 
